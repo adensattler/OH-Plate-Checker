@@ -4,6 +4,8 @@ from termcolor import colored
 from colorama import init
 init(autoreset=True)
 
+PROCESS_COUNT = 10
+
 # custom process class
 class Worker(multiprocessing.Process):
     # this custom worker class can take an argument (that being job_queue)
@@ -24,10 +26,11 @@ class Worker(multiprocessing.Process):
 
             else:
                 print(colored("PLATE AVAILABLE: " + plate, "green"))
-                f = open("outputresults.txt", "a")
-                f.write(plate + "\n")
-                f.close()
+                with open("outputresults.txt", "a") as f:
+                    f.write(plate + "\n")
 
+
+# DRIVER
 if __name__ == ('__main__'):
     f1 = open("outputresults.txt", 'w')
 
@@ -69,15 +72,26 @@ if __name__ == ('__main__'):
     jobs = []
     job_queue = multiprocessing.Queue()
 
+    # add each plate url to the populate the job queue
     for plate in lines:
         url = urlfront + plate + urlback
         job_queue.put(url)
 
-    for i in range(10):
+    # add a None job (termination signal) for each worker to terminate cleanly!
+    for _ in range(PROCESS_COUNT):
+        job_queue.put(None)
+
+    # start each worker process
+    for i in range(PROCESS_COUNT):
         p = Worker(job_queue)
         jobs.append(p)
         p.start()
-    p.join()
+
+    # join all processes at the end
+    for job in jobs:
+        job.join()
+    
+    print("\nSCAN COMPLETE!\n")
 
 
 
