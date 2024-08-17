@@ -2,6 +2,7 @@ import multiprocessing
 import requests
 from termcolor import colored
 from colorama import init
+import time
 init(autoreset=True)
 
 PROCESS_COUNT = 10
@@ -41,6 +42,7 @@ if __name__ == ('__main__'):
     print("4 <- All 4 letter words")
     print("5 <- All 5 letter words")
     choice = int(input("Please enter what you want to check: "))
+    start_time = time.time()
 
     lines = []
     alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
@@ -92,6 +94,8 @@ if __name__ == ('__main__'):
         job.join()
     
     print("\nSCAN COMPLETE!\n")
+    end_time = time.time()
+    print(f"Completed in {end_time-start_time:.2f} seconds.")
 
 
 
